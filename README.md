@@ -2,6 +2,10 @@
 
 `lets_prompt_AI` is a polished public prompt library built with Next.js, TypeScript, and Tailwind CSS. It is designed for normal end users who want to quickly browse, search, filter, open, and copy useful AI prompts for everyday life.
 
+Live website:
+
+`https://dewmith.github.io/lets_prompt_AI/`
+
 ## Features
 
 - Landing page with a premium hero, visible search, featured categories, and featured prompts
@@ -41,6 +45,10 @@ npm run lint
 This repo now includes a GitHub Pages workflow in:
 
 `.github/workflows/deploy-pages.yml`
+
+Current deployed site:
+
+`https://dewmith.github.io/lets_prompt_AI/`
 
 How it works:
 
