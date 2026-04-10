@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f0e7;
+  --foreground: #10202c;
+  --muted: #5d6b77;
+  --surface: rgba(255, 250, 244, 0.76);
+  --surface-strong: #fffaf4;
+  --line: rgba(15, 23, 42, 0.1);
+  --hero: #0d1821;
+  --accent: #11998b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(17, 153, 139, 0.14), transparent 32%),
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.11), transparent 28%),
+    linear-gradient(180deg, #fbf7f0 0%, #f5efe6 50%, #faf6ef 100%);
+  color: var(--foreground);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
+  background-size: 96px 96px;
+  mask-image: radial-gradient(circle at center, black, transparent 78%);
+  opacity: 0.4;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+::selection {
+  background: rgba(17, 153, 139, 0.22);
+}
+
+.page-shell {
+  margin-inline: auto;
+  max-width: 78rem;
+  padding-inline: 1.25rem;
+}
+
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.ink-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 100%),
+    linear-gradient(145deg, rgba(12, 23, 33, 0.96), rgba(18, 34, 46, 0.94));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 28px 120px rgba(3, 10, 18, 0.42);
+}
+
+.prompt-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: 1100px;
+}
+
+@media (min-width: 640px) {
+  .page-shell {
+    padding-inline: 1.75rem;
+  }
+}
+
