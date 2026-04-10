@@ -29,7 +29,7 @@ export default function HomePage() {
             </p>
 
             <form
-              action="/prompts"
+              action="prompts/"
               className="mt-8 grid gap-3 rounded-[2rem] border border-white/12 bg-white/6 p-3 shadow-[0_28px_90px_rgba(0,0,0,0.18)] backdrop-blur sm:grid-cols-[1fr_auto]"
             >
               <input

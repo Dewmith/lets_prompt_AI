@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { PromptBrowser } from "@/components/browse/prompt-browser";
 import { getCategoriesWithCounts, getCategoryStatsBySlug, getPromptsByCategory } from "@/lib/prompts";
 
@@ -62,9 +63,10 @@ export default async function CategoryDetailPage({ params }: { params: Params })
       </div>
 
       <div className="mt-12">
-        <PromptBrowser prompts={prompts} categories={getCategoriesWithCounts()} hideCategoryFilters initialSort="featured" />
+        <Suspense fallback={<div className="glass-panel rounded-[2rem] p-8 text-sm text-slate-600">Loading prompts...</div>}>
+          <PromptBrowser prompts={prompts} categories={getCategoriesWithCounts()} hideCategoryFilters initialSort="featured" />
+        </Suspense>
       </div>
     </section>
   );
 }
-

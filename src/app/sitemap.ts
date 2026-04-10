@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { getAllPrompts, getCategoriesWithCounts } from "@/lib/prompts";
 import { siteConfig } from "@/lib/site";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseEntries: MetadataRoute.Sitemap = ["", "/prompts", "/categories", "/about"].map((path) => ({
     url: `${siteConfig.url}${path}`,
@@ -26,4 +28,3 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...baseEntries, ...categoryEntries, ...promptEntries];
 }
-

@@ -36,6 +36,31 @@ npm run build
 npm run lint
 ```
 
+## Deploy To GitHub Pages
+
+This repo now includes a GitHub Pages workflow in:
+
+`.github/workflows/deploy-pages.yml`
+
+How it works:
+
+- builds the app as a static export with `output: "export"`
+- uploads the generated `out/` folder to GitHub Pages
+- uses Node 24 in the workflow
+- automatically applies the correct repo base path for project Pages deployments
+
+To deploy:
+
+1. Push this repo to GitHub.
+2. In GitHub, open `Settings -> Pages`.
+3. Set `Source` to `GitHub Actions`.
+4. Push to `main` or run the workflow manually.
+
+The site is configured for both:
+
+- user or org sites like `https://username.github.io/`
+- project sites like `https://username.github.io/repository-name/`
+
 ## Editing Prompts
 
 The main prompt library lives in:
@@ -62,6 +87,15 @@ Each prompt uses this shape:
 Category metadata like descriptions, slugs, and visual styling lives in:
 
 `src/content/categories.ts`
+
+To add a new prompt:
+
+1. Open `src/content/prompts.json`
+2. Duplicate an existing prompt object
+3. Change the text, category, tags, and dates
+4. Commit and push
+
+The static site will rebuild on GitHub Pages automatically.
 
 ## Project Structure
 
@@ -113,6 +147,6 @@ lets_prompt_AI/
 
 ## Notes
 
-- Update `src/lib/site.ts` with your real production URL before deployment.
+- `src/lib/site.ts` automatically derives the GitHub Pages URL during CI, but you can still override it with `NEXT_PUBLIC_SITE_URL` if needed.
 - The prompt detail and category routes are statically generated from the local content.
 - The browse page stays flexible for search and filtering while the content itself remains simple to maintain.

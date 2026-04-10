@@ -1,11 +1,17 @@
 "use client";
 
 import { startTransition, useDeferredValue, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { pluralize } from "@/lib/format";
 import type { CategoryWithCount, Prompt, PromptCategory } from "@/types/prompt";
 import { PromptCard } from "@/components/prompt/prompt-card";
 
 type SortMode = "featured" | "newest" | "title";
+type BrowserUrlState = {
+  query: string;
+  category: PromptCategory | undefined;
+  sort: SortMode;
+};
 
 interface PromptBrowserProps {
   prompts: Prompt[];
@@ -14,6 +20,7 @@ interface PromptBrowserProps {
   initialCategory?: PromptCategory;
   initialSort?: SortMode;
   hideCategoryFilters?: boolean;
+  syncWithUrl?: boolean;
 }
 
 function sortPrompts(prompts: Prompt[], sortMode: SortMode) {
@@ -38,6 +45,10 @@ function sortPrompts(prompts: Prompt[], sortMode: SortMode) {
   );
 }
 
+function isSortMode(value: string | null): value is SortMode {
+  return value === "featured" || value === "newest" || value === "title";
+}
+
 export function PromptBrowser({
   prompts,
   categories,
@@ -45,12 +56,106 @@ export function PromptBrowser({
   initialCategory,
   initialSort = "featured",
   hideCategoryFilters = false,
+  syncWithUrl = false,
 }: PromptBrowserProps) {
-  const [query, setQuery] = useState(initialQuery);
-  const [selectedCategory, setSelectedCategory] = useState<PromptCategory | undefined>(initialCategory);
-  const [sortMode, setSortMode] = useState<SortMode>(initialSort);
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const getCategoryFromSlug = (slug: string | null): PromptCategory | undefined =>
+    categories.find((category) => category.slug === slug)?.name;
+
+  const getSlugFromCategory = (categoryName: PromptCategory | undefined): string | undefined =>
+    categories.find((category) => category.name === categoryName)?.slug;
+
+  const getUrlState = (): BrowserUrlState => {
+    if (!syncWithUrl) {
+      return {
+        query: initialQuery,
+        category: initialCategory,
+        sort: initialSort,
+      };
+    }
+
+    const sortFromUrl = searchParams.get("sort");
+
+    return {
+      query: searchParams.get("query") ?? initialQuery,
+      category: getCategoryFromSlug(searchParams.get("category")) ?? initialCategory,
+      sort: isSortMode(sortFromUrl) ? sortFromUrl : initialSort,
+    };
+  };
+
+  const [query, setQuery] = useState(() => getUrlState().query);
+  const [selectedCategory, setSelectedCategory] = useState<PromptCategory | undefined>(
+    () => getUrlState().category,
+  );
+  const [sortMode, setSortMode] = useState<SortMode>(() => getUrlState().sort);
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
+
+  function syncStateToUrl(nextState: {
+    query: string;
+    category: PromptCategory | undefined;
+    sort: SortMode;
+  }) {
+    if (!syncWithUrl) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+
+    if (nextState.query.trim()) {
+      nextParams.set("query", nextState.query.trim());
+    } else {
+      nextParams.delete("query");
+    }
+
+    const categorySlug = getSlugFromCategory(nextState.category);
+    if (categorySlug) {
+      nextParams.set("category", categorySlug);
+    } else {
+      nextParams.delete("category");
+    }
+
+    if (nextState.sort !== "featured") {
+      nextParams.set("sort", nextState.sort);
+    } else {
+      nextParams.delete("sort");
+    }
+
+    const nextQueryString = nextParams.toString();
+    const nextUrl = nextQueryString ? `${pathname}?${nextQueryString}` : pathname;
+
+    router.replace(nextUrl, { scroll: false });
+  }
+
+  function updateQuery(nextQuery: string) {
+    setQuery(nextQuery);
+    syncStateToUrl({
+      query: nextQuery,
+      category: selectedCategory,
+      sort: sortMode,
+    });
+  }
+
+  function updateCategory(nextCategory: PromptCategory | undefined) {
+    setSelectedCategory(nextCategory);
+    syncStateToUrl({
+      query,
+      category: nextCategory,
+      sort: sortMode,
+    });
+  }
+
+  function updateSort(nextSort: SortMode) {
+    setSortMode(nextSort);
+    syncStateToUrl({
+      query,
+      category: selectedCategory,
+      sort: nextSort,
+    });
+  }
 
   const filteredPrompts = sortPrompts(
     prompts.filter((prompt) => {
@@ -79,7 +184,7 @@ export function PromptBrowser({
             <input
               type="search"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => updateQuery(event.target.value)}
               placeholder="Search by title, description, or tag"
               className="h-14 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-teal-500"
             />
@@ -89,7 +194,9 @@ export function PromptBrowser({
             <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Sort</span>
             <select
               value={sortMode}
-              onChange={(event) => startTransition(() => setSortMode(event.target.value as SortMode))}
+              onChange={(event) =>
+                startTransition(() => updateSort(event.target.value as SortMode))
+              }
               className="h-14 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-950 outline-none transition focus:border-teal-500"
             >
               <option value="featured">Featured first</option>
@@ -103,7 +210,7 @@ export function PromptBrowser({
           <div className="mt-5 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => startTransition(() => setSelectedCategory(undefined))}
+              onClick={() => startTransition(() => updateCategory(undefined))}
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 !selectedCategory
                   ? "bg-slate-950 text-white"
@@ -116,7 +223,7 @@ export function PromptBrowser({
               <button
                 key={category.slug}
                 type="button"
-                onClick={() => startTransition(() => setSelectedCategory(category.name))}
+                onClick={() => startTransition(() => updateCategory(category.name))}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   selectedCategory === category.name
                     ? "bg-slate-950 text-white"

@@ -1,31 +1,14 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { PromptBrowser } from "@/components/browse/prompt-browser";
-import { getAllPrompts, getCategoriesWithCounts, getCategoryNameFromSlug } from "@/lib/prompts";
-
-type SearchParams = Promise<{
-  query?: string | string[];
-  category?: string | string[];
-  sort?: string | string[];
-}>;
+import { getAllPrompts, getCategoriesWithCounts } from "@/lib/prompts";
 
 export const metadata: Metadata = {
   title: "Browse Prompts",
   description: "Browse, search, filter, and copy curated AI prompts for work, writing, learning, travel, finance, and more.",
 };
 
-export default async function PromptsPage({ searchParams }: { searchParams: SearchParams }) {
-  const resolvedSearchParams = await searchParams;
-  const initialQuery =
-    typeof resolvedSearchParams.query === "string" ? resolvedSearchParams.query : "";
-  const categorySlug =
-    typeof resolvedSearchParams.category === "string" ? resolvedSearchParams.category : undefined;
-  const initialCategory = categorySlug ? getCategoryNameFromSlug(categorySlug) : undefined;
-  const initialSort =
-    typeof resolvedSearchParams.sort === "string" &&
-    ["featured", "newest", "title"].includes(resolvedSearchParams.sort)
-      ? (resolvedSearchParams.sort as "featured" | "newest" | "title")
-      : "featured";
-
+export default function PromptsPage() {
   return (
     <section className="page-shell py-16 sm:py-20">
       <div className="max-w-3xl">
@@ -38,15 +21,14 @@ export default async function PromptsPage({ searchParams }: { searchParams: Sear
       </div>
 
       <div className="mt-12">
-        <PromptBrowser
-          prompts={getAllPrompts()}
-          categories={getCategoriesWithCounts()}
-          initialQuery={initialQuery}
-          initialCategory={initialCategory}
-          initialSort={initialSort}
-        />
+        <Suspense fallback={<div className="glass-panel rounded-[2rem] p-8 text-sm text-slate-600">Loading prompt library...</div>}>
+          <PromptBrowser
+            prompts={getAllPrompts()}
+            categories={getCategoriesWithCounts()}
+            syncWithUrl
+          />
+        </Suspense>
       </div>
     </section>
   );
 }
-
