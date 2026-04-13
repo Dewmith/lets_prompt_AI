@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCategoryMeta } from "@/lib/prompts";
+import { getCategoryDefinition } from "@/content/categories";
 import type { PromptCategory } from "@/types/prompt";
 
 interface CategoryBadgeProps {
@@ -7,7 +7,7 @@ interface CategoryBadgeProps {
 }
 
 export function CategoryBadge({ category }: CategoryBadgeProps) {
-  const meta = getCategoryMeta(category);
+  const meta = getCategoryDefinition(category);
 
   return (
     <Link
@@ -19,4 +19,3 @@ export function CategoryBadge({ category }: CategoryBadgeProps) {
     </Link>
   );
 }
-

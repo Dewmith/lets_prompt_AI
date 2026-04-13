@@ -13,17 +13,20 @@ export const promptCategories = [
 
 export type PromptCategory = (typeof promptCategories)[number];
 
-export interface Prompt {
+export interface PromptSummary {
   id: string;
   title: string;
   category: PromptCategory;
   description: string;
   tags: string[];
+  featured: boolean;
+  createdAt: string;
+}
+
+export interface Prompt extends PromptSummary {
   prompt: string;
   whenToUse: string;
   exampleUse?: string;
-  featured: boolean;
-  createdAt: string;
 }
 
 export interface CategoryDefinition {
@@ -38,4 +41,3 @@ export interface CategoryDefinition {
 export interface CategoryWithCount extends CategoryDefinition {
   count: number;
 }
-

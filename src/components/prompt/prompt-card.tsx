@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { formatPromptDate } from "@/lib/format";
-import type { Prompt } from "@/types/prompt";
+import type { PromptSummary } from "@/types/prompt";
 import { CategoryBadge } from "./category-badge";
-import { CopyButton } from "./copy-button";
 
 interface PromptCardProps {
-  prompt: Prompt;
+  prompt: PromptSummary;
 }
 
 export function PromptCard({ prompt }: PromptCardProps) {
@@ -41,11 +40,10 @@ export function PromptCard({ prompt }: PromptCardProps) {
           href={`/prompts/${prompt.id}`}
           className="inline-flex items-center text-sm font-semibold text-slate-900 transition hover:text-teal-800"
         >
-          View details
+          Open and copy
         </Link>
-        <CopyButton value={prompt.prompt} label="Copy" className="px-3 py-1.5 text-xs" />
+        <span className="text-sm text-slate-400 transition group-hover:text-slate-600">Full prompt inside</span>
       </div>
     </article>
   );
 }
-

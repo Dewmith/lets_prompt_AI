@@ -3,7 +3,7 @@
 import { startTransition, useDeferredValue, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { pluralize } from "@/lib/format";
-import type { CategoryWithCount, Prompt, PromptCategory } from "@/types/prompt";
+import type { CategoryWithCount, PromptCategory, PromptSummary } from "@/types/prompt";
 import { PromptCard } from "@/components/prompt/prompt-card";
 
 type SortMode = "featured" | "newest" | "title";
@@ -14,7 +14,7 @@ type BrowserUrlState = {
 };
 
 interface PromptBrowserProps {
-  prompts: Prompt[];
+  prompts: PromptSummary[];
   categories: CategoryWithCount[];
   initialQuery?: string;
   initialCategory?: PromptCategory;
@@ -23,7 +23,7 @@ interface PromptBrowserProps {
   syncWithUrl?: boolean;
 }
 
-function sortPrompts(prompts: Prompt[], sortMode: SortMode) {
+function sortPrompts(prompts: PromptSummary[], sortMode: SortMode) {
   const nextPrompts = [...prompts];
 
   if (sortMode === "title") {
